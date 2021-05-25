@@ -32,6 +32,12 @@ check key
 ``pip install sounddevice``
 ``cd folder``
 ``python test_microphone.py``
+list devices:
+``python test_microphone.py -l``
+change device for internal playback:
+``python test_microphone.py -d ...``
+get model: https://alphacephei.com/vosk/models
+using vosk-model-fr-0.6-linto-2.2.0
 
 #### Install transformers
 https://anaconda.org/conda-forge/transformers  
@@ -43,8 +49,15 @@ https://anaconda.org/conda-forge/transformers
 ``git clone https://github.com/Tomiinek/WaveRNN``  
 
 ``cd Multilingual_Text_to_Speech``  
-``pip install -r requirements.txt``  
+``pip install -r requirements.txt``  (remove torch from list)
 (hint to check: pip list)
+
+#### handy stuff
+``which -a pip``
+``conda list`
+``pip list``
+``python -m sounddevices``
+
 
 ??try one by one in conda  
 ??conda install juptyer, usw..  
