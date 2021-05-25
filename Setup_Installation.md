@@ -54,7 +54,7 @@ https://anaconda.org/conda-forge/transformers
 
 #### handy stuff
 ``which -a pip``
-``conda list`
+``conda list``
 ``pip list``
 ``python -m sounddevices``
 
