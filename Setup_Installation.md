@@ -53,10 +53,10 @@ https://anaconda.org/conda-forge/transformers
 (hint to check: pip list)
 
 #### handy stuff
-``which -a pip``
-``conda list``
-``pip list``
-``python -m sounddevices``
+``which -a pip``  
+``conda list``  
+``pip list``  
+``python -m sounddevices``  
 
 
 ??try one by one in conda  
