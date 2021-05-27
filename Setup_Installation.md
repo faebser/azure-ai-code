@@ -63,6 +63,8 @@ tts other possiblities: svoxpico/pico2wave, espak with mrolla, python gtts (goog
 http://manpages.ubuntu.com/manpages/trusty/man1/aplay.1.html  
 force rate to change playback speed and pitch:  
 -r, --rate=#<Hz>  
+  
+http://www.mplayerhq.hu/DOCS/HTML/en/index.html  
 
 ### handy stuff
 ``which -a pip``  
