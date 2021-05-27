@@ -66,5 +66,5 @@ tts other possiblities: svoxpico/pico2wave, espak with mrolla, python gtts (goog
 ``python -m sounddevices``  
 
 
-??try one by one in conda  
+??try to install as much as possible in conda  
 ??conda install juptyer, usw..  
