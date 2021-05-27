@@ -1,8 +1,8 @@
 # AI setup for Lissa (installation by Moufouli Bello)
 
-### Basics
-``sudo apt update && sudo apt upgrade``
-``sudo apt install git``
+### Basics  
+``sudo apt update && sudo apt upgrade``  
+``sudo apt install git``  
 Sublime, install the GPG key:  
 ``wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -``  
 Ensure apt is set up to work with https sources:  
@@ -58,6 +58,11 @@ use:
 ``echo "1|Je vois une grande foule agitée.|00-de|de*0.2:fr*0.8" python /home/panorama/tts/Multilingual_Text_to_Speech/synthesize.py --checkpoint /home/panorama/tts/checkpoints/generated_switching.py``  
 
 tts other possiblities: svoxpico/pico2wave, espak with mrolla, python gtts (google)
+
+### sound stuff  
+http://manpages.ubuntu.com/manpages/trusty/man1/aplay.1.html  
+force rate to change playback speed and pitch:  
+-r, --rate=#<Hz>  
 
 ### handy stuff
 ``which -a pip``  
