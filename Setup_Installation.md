@@ -29,11 +29,12 @@ check key
 #### Install vosk STT
 ``git clone https://github.com/alphacep/vosk-api``  
 ``pip install vosk``  
-``pip install sounddevice``  
+``pip install sounddevices``  
 ``cd folder``  
 
 use:  
 ``python test_microphone.py``  
+
 list devices:  
 ``python test_microphone.py -l``  
 change device for internal playback:  
@@ -50,13 +51,12 @@ https://anaconda.org/conda-forge/transformers
 #### Install tocatron TTS
 ``git clone https://github.com/Tomiinek/Multilingual_Text_to_Speech``  
 ?? ``git clone https://github.com/Tomiinek/WaveRNN``  
-
 ``pip install -q -U soundfile``  
 ``pip install -q -U phonemizer``  
 ``pip install -q -U epitran``  
 (hint to check: pip list)  
 
-use:
+use:  
 ``cd Multilingual_Text_to_Speech``  
 ``echo "1|Je vois une grande foule agitée.|00-de|de*0.2:fr*0.8" python /home/panorama/tts/Multilingual_Text_to_Speech/synthesize.py --checkpoint /home/panorama/tts/checkpoints/generated_switching.py``  
 
