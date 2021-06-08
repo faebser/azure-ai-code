@@ -26,7 +26,7 @@ check key
 ### Install vosk STT
 ``git clone https://github.com/alphacep/vosk-api``  
 ``pip install vosk``  
-``pip install sounddevices``  
+``pip install sounddevice``  
 ``cd folder``  
 
 use:  
