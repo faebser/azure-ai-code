@@ -14,8 +14,9 @@ import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
 
 # Build models
+current_dir = os.getcwd()
 
-vosk_model = vosk.Model("vosk_model")
+vosk_model = vosk.Model(os.path.join(current_dir, "checkpoints", "vosk-model"))
 gpt2_model = GPT2LMHeadModel.from_pretrained("checkpoints/checkpoint-2500/")
 tokenizer = GPT2TokenizerFast.from_pretrained("antoiloui/belgpt2", model_max_length=768, pad_token='<|pad|>')
 
@@ -26,7 +27,6 @@ gpt2_model.cuda()
 gpt2_model.eval()
 
 # import tacotron stuff
-current_dir = os.getcwd()
 tacotron_dir = "Multilingual_Text_to_Speech"
 tacotron_chpt = "generated_switching.pyt"
 
