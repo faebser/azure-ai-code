@@ -8,10 +8,13 @@ import queue
 import sounddevice as sd
 import vosk
 import sys
-import simpleaudio
+from pydub import AudioSegment
+from pydub.playback import play
+import datetime
 
 import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
+
 
 # Build models
 current_dir = os.getcwd()
@@ -47,6 +50,12 @@ model_taco.cuda()
 ##
 # HELPERS
 ##
+##
+
+def date_name():
+    a = datetime.datetime.now()
+    return "{}_{}_{}-{}_{}_{}".format(a.year, a.month, a.day, a.hour, a.minute, a.second)
+
 
 def callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
@@ -99,12 +108,9 @@ def generate_audio(answer):
     return audio.inverse_spectrogram(a, not hp.predict_linear)
 
 def play_audio(audio):
-    print("please implement me")
-    playback = simpleaudio.play_buffer(
-        audio,
-        num_channels=1,
-        sample_rate=hp.sample_rate
-    )
+    talk = AudioSegment.from_raw(audio)
+    play(talk)
+    talk.export(os.path.join('recordings', date_name) + '.mp3', format=mp3)
 ##
 # CONFIG
 ##

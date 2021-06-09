@@ -2,6 +2,7 @@
 
 setup:
 	mkdir -p checkpoints/
+	mkdir -p recordings/
 	git clone https://github.com/Tomiinek/Multilingual_Text_to_Speech
 	cd checkpoints/ && curl -O -L "https://github.com/Tomiinek/Multilingual_Text_to_Speech/releases/download/v1.0/generated_switching.pyt"
 	cd checkpoints/ && scp -r datascience@40.127.190.201:/home/datascience/notebooks/moufouli/results-finetune/checkpoint-2500 .

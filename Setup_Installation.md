@@ -21,7 +21,7 @@ check key
 
 ### Install general dependencies   
 ``sudo apt install g++``  
-``conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch``
+``conda install pytorch torchvision pydub simpleaudio torchaudio cudatoolkit=10.2 -c pytorch``
 
 ### Install vosk STT
 ``git clone https://github.com/alphacep/vosk-api``  
