@@ -101,6 +101,8 @@ def generate_text(question):
     # sort by length and return only the longest
     r = sorted(to_return, key=len)
 
+    # TODO save generated answer
+
     return r[-1]
 
 def generate_audio(answer):
@@ -138,6 +140,7 @@ try:
                     print("result: {}".format(r['text']))
                     answer = generate_text(r['text'])
                     audio = generate_audio(answer)
+                    with q.mutex: q = queue.Queue()
                 else:
                     pass
                     #print(rec.PartialResult())
