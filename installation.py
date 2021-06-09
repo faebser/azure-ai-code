@@ -11,6 +11,8 @@ import sys
 from pydub import AudioSegment
 from pydub.playback import play
 import datetime
+import json
+import traceback
 
 import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
@@ -33,9 +35,12 @@ gpt2_model.eval()
 tacotron_dir = "Multilingual_Text_to_Speech"
 tacotron_chpt = "generated_switching.pyt"
 
-os.chdir(os.path.join(current_dir, tacotron_dir))
+#os.chdir(os.path.join(current_dir, tacotron_dir))
+sys.path.append(os.path.join('/home/panorama/azure-ai-code/', tacotron_dir))
 
 if "utils" in sys.modules: del sys.modules["utils"]
+
+#print(os.getcwd())
 
 from synthesize import synthesize
 from params.params import Params as hp
@@ -77,7 +82,7 @@ def generate_text(question):
 
     to_return = []
 
-    output = model_test.generate(
+    output = gpt2_model.generate(
                 inputs,
                 do_sample=True,
                 top_k=50,
@@ -107,17 +112,19 @@ def generate_text(question):
 
 def generate_audio(answer):
     spectogram = synthesize(model_taco, "|" + answer)
-    return audio.inverse_spectrogram(a, not hp.predict_linear)
+    return audio.inverse_spectrogram(spectogram, not hp.predict_linear)
 
-def play_audio(audio):
-    talk = AudioSegment.from_raw(audio)
-    play(talk)
-    talk.export(os.path.join('recordings', date_name) + '.mp3', format=mp3)
+def play_audio(speech_audio):
+    audio.save(speech_audio, os.path.join('recordings', date_name()) +'.wav')
+    #talk = AudioSegment.from_raw(audio)
+    #play(talk)
+    #talk.export(os.path.join('recordings', date_name) + '.mp3', format=mp3)
 ##
 # CONFIG
 ##
 
-DEVICE_ID = 6
+DEVICE_ID =  0
+# get device from vosk example
 BLOCK_SIZE = 80000
 SAMPLE_RATE = None # set to None for auto samplerate
 
@@ -132,15 +139,16 @@ try:
     with sd.RawInputStream(samplerate=SAMPLE_RATE, blocksize = BLOCK_SIZE, device=DEVICE_ID,
                            dtype='int16', channels=1, callback=callback):
 
-            rec = vosk.KaldiRecognizer(model, args.samplerate)
+            rec = vosk.KaldiRecognizer(vosk_model, SAMPLE_RATE)
             while True:
                 data = q.get()
                 if rec.AcceptWaveform(data):
-                    r = rec.Result()
+                    #r = rec.Result()
+                    r = json.loads(rec.Result())
                     print("result: {}".format(r['text']))
                     answer = generate_text(r['text'])
-                    audio = generate_audio(answer)
-                    play_audio(audio)
+                    _audio = generate_audio(answer)
+                    play_audio(_audio)
                     with q.mutex: q = queue.Queue()
                 else:
                     pass
@@ -149,5 +157,6 @@ try:
 except KeyboardInterrupt:
     print('\nDone')
 except Exception as e:
+    traceback.print_tb(e.__traceback__)
     print(type(e).__name__ + ': ' + str(e))
     exit(-1)
