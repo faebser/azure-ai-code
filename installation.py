@@ -115,9 +115,10 @@ def generate_audio(answer):
     return audio.inverse_spectrogram(spectogram, not hp.predict_linear)
 
 def play_audio(speech_audio):
-    audio.save(speech_audio, os.path.join('recordings', date_name()) +'.wav')
-    #talk = AudioSegment.from_raw(audio)
-    #play(talk)
+    _name = os.path.join('recordings', date_name()) +'.wav'
+    audio.save(speech_audio, _name)
+    talk = AudioSegment.from_file(_name, format='wav')
+    play(talk)
     #talk.export(os.path.join('recordings', date_name) + '.mp3', format=mp3)
 ##
 # CONFIG
@@ -145,11 +146,14 @@ try:
                 if rec.AcceptWaveform(data):
                     #r = rec.Result()
                     r = json.loads(rec.Result())
-                    print("result: {}".format(r['text']))
-                    answer = generate_text(r['text'])
-                    _audio = generate_audio(answer)
-                    play_audio(_audio)
-                    with q.mutex: q = queue.Queue()
+                    print("result with len {}: {}".format(len(r['text']), r['text']))
+                    if len(r['text']) != 0:
+                        answer = generate_text(r['text'])
+                        _audio = generate_audio(answer)
+                        play_audio(_audio)
+                        with q.mutex: q = queue.Queue()
+                    else:
+                        print("found result but length was 0, so no generation")
                 else:
                     pass
                     #print(rec.PartialResult())
