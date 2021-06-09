@@ -140,6 +140,7 @@ try:
                     print("result: {}".format(r['text']))
                     answer = generate_text(r['text'])
                     audio = generate_audio(answer)
+                    play_audio(audio)
                     with q.mutex: q = queue.Queue()
                 else:
                     pass
