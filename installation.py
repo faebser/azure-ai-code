@@ -8,6 +8,7 @@ import queue
 import sounddevice as sd
 import vosk
 import sys
+from gtts import gTTS
 from pydub import AudioSegment
 from pydub.playback import play
 import datetime
@@ -91,6 +92,7 @@ def generate_text(question):
                 num_return_sequences=2,
                 pad_token_id=tokenizer.eos_token_id,
                 temperature=0.65
+                #temperature=0.65
     )
 
     # Decode it
@@ -102,6 +104,7 @@ def generate_text(question):
         b = o.split( 'B:' )[1]
         print(b)
         to_return.append(b + "|00-de|fr")
+        #to_return.append(b + " ")
 
     # sort by length and return only the longest
     r = sorted(to_return, key=len)
@@ -113,19 +116,25 @@ def generate_text(question):
 def generate_audio(answer):
     spectogram = synthesize(model_taco, "|" + answer)
     return audio.inverse_spectrogram(spectogram, not hp.predict_linear)
+    #print('void')
 
 def play_audio(speech_audio):
     _name = os.path.join('recordings', date_name()) +'.wav'
+    #_name = os.path.join('recordings', date_name()) +'.mp3'
     audio.save(speech_audio, _name)
     talk = AudioSegment.from_file(_name, format='wav')
+    #tts = gTTS(answer, lang='fr')
+    #tts = gTTS(answer, lang='fr', slow=True)
+    #tts.save(_name)
+    #talk = AudioSegment.from_file(_name, format='mp3')
     play(talk)
     #talk.export(os.path.join('recordings', date_name) + '.mp3', format=mp3)
 ##
 # CONFIG
 ##
 
-DEVICE_ID =  0
-# get device from vosk example
+DEVICE_ID =  17
+# get device from vosk example: python test_microphone.py -l
 BLOCK_SIZE = 80000
 SAMPLE_RATE = None # set to None for auto samplerate
 
