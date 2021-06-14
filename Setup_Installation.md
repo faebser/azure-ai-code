@@ -30,6 +30,8 @@ sudo apt-get install libasound2-dev
 conda install click==7.1.2
 conda install -c conda-forge spacy
 
+run ``python -m spacy download fr_core_news_sm`` 
+
 
 ### Install vosk STT
 ``git clone https://github.com/alphacep/vosk-api``  
