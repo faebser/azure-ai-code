@@ -145,7 +145,7 @@ def play_audio(speech_audios, name):
     #talk = AudioSegment.from_file(_name, format='mp3')
 
 def save(question, answer, name):
-    with open(os.path.join('recordings', name) + '.txt') as output_file:
+    with open(os.path.join('recordings', name) + '.txt', 'w') as output_file:
         output_file.write(question)
         output_file.write('\n\n')
         output_file.write(answer)
