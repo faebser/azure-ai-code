@@ -113,19 +113,19 @@ def generate_text(question, name, _context):
     #print(decoded_output)
     for o in decoded_output:
         b = o.split( 'B:' )[1]
-        print(b)
-        to_return.append(b + ACCENT)
+        to_return.append(b)
         #to_return.append(b + " ")
 
     # sort by length and return only the longest
     r = sorted(to_return, key=len)
-    context.appendleft("A: {}\n B: {} ".format(question, r[-1].split("|")[0]))
+    _context.appendleft("A: {}\n B: {} ".format(question, r[-1]))
 
     return r[-1], _context
 
 def generate_audio(answer):
-    sentences = [str(i) for i in nlp(answer).sents]
-    spectograms = [ synthesize(model_taco, "|" + s) for s in sentences ]
+    sentences = [str(i).strip() for i in nlp(answer).sents]
+    print(sentences)
+    spectograms = [ synthesize(model_taco, "|" + s + ACCENT) for s in sentences ]
     return [ audio.inverse_spectrogram(_s, not hp.predict_linear) for _s in spectograms ]
 
 def play_audio(speech_audios, name):
