@@ -26,6 +26,10 @@ pip install simpleaudio
 pip install pyddub
 sudo apt-get install libasound2-dev
 
+### Additional deps for sentence segmentation
+conda install click==7.1.2
+conda install -c conda-forge spacy
+
 
 ### Install vosk STT
 ``git clone https://github.com/alphacep/vosk-api``  
