@@ -14,6 +14,7 @@ from pydub.playback import play
 import datetime
 import json
 import traceback
+from collections import deque
 
 import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
@@ -76,9 +77,17 @@ def int_or_str(text):
     except ValueError:
         return text
 
-def generate_text(question):
+def generate_text(question, name, _context):
     # TODO add hidden prompt
     prompt = "{}A: {}\n B: ".format(tokenizer.bos_token, question)
+    index = 0
+
+    original_prompt = prompt
+
+    while len(prompt) < 768 and len(_context) -1 > index:
+        prompt = _context[ index ] + ' ' + prompt
+        index = index + 1
+
     inputs = tokenizer.encode(prompt, add_special_tokens=False, return_tensors="pt").to(device)
 
     to_return = []
@@ -92,7 +101,6 @@ def generate_text(question):
                 num_return_sequences=2,
                 pad_token_id=tokenizer.eos_token_id,
                 temperature=0.65
-                #temperature=0.65
     )
 
     # Decode it
@@ -103,22 +111,21 @@ def generate_text(question):
     for o in decoded_output:
         b = o.split( 'B:' )[1]
         print(b)
-        to_return.append(b + "|00-de|fr")
+        to_return.append(b + ACCENT)
         #to_return.append(b + " ")
 
     # sort by length and return only the longest
     r = sorted(to_return, key=len)
+    context.appendleft("A: {}\n B: {} ".format(question, r[-1].split("|")[0]))
 
-    # TODO save generated answer
-
-    return r[-1]
+    return r[-1], _context
 
 def generate_audio(answer):
     spectogram = synthesize(model_taco, "|" + answer)
     return audio.inverse_spectrogram(spectogram, not hp.predict_linear)
     #print('void')
 
-def play_audio(speech_audio):
+def play_audio(speech_audio, name):
     _name = os.path.join('recordings', date_name()) +'.wav'
     #_name = os.path.join('recordings', date_name()) +'.mp3'
     audio.save(speech_audio, _name)
@@ -128,7 +135,12 @@ def play_audio(speech_audio):
     #tts.save(_name)
     #talk = AudioSegment.from_file(_name, format='mp3')
     play(talk)
-    #talk.export(os.path.join('recordings', date_name) + '.mp3', format=mp3)
+
+def save(question, answer, name):
+    with open(os.path.join('recordings', name) + '.txt') as output_file:
+        output_file.write(question)
+        output_file.write('\n\n')
+        output_file.write(answer)
 ##
 # CONFIG
 ##
@@ -137,6 +149,7 @@ DEVICE_ID =  17
 # get device from vosk example: python test_microphone.py -l
 BLOCK_SIZE = 80000
 SAMPLE_RATE = None # set to None for auto samplerate
+ACCENT = "|00-de|fr"
 
 if SAMPLE_RATE is None:
     device_info = sd.query_devices(DEVICE_ID, 'input')
@@ -144,6 +157,7 @@ if SAMPLE_RATE is None:
     SAMPLE_RATE = int(device_info['default_samplerate'])
 
 q = queue.Queue()
+context = deque(maxlen=10)
 
 try:
     with sd.RawInputStream(samplerate=SAMPLE_RATE, blocksize = BLOCK_SIZE, device=DEVICE_ID,
@@ -156,13 +170,18 @@ try:
                     #r = rec.Result()
                     r = json.loads(rec.Result())
                     print("result with len {}: {}".format(len(r['text']), r['text']))
-                    if len(r['text']) != 0:
-                        answer = generate_text(r['text'])
+                    if len(r['text']) > 3:
+                        name = date_name()
+                        answer, context = generate_text(r['text'], name, context)
+                        print("new context:")
+                        print(context)
+                        # TODO add systemd service
                         _audio = generate_audio(answer)
-                        play_audio(_audio)
+                        play_audio(_audio, name)
+                        save(r['text'], answer, name)
                         with q.mutex: q = queue.Queue()
                     else:
-                        print("found result but length was 0, so no generation")
+                        print("found result but length was shorter than 3, so no generation")
                 else:
                     pass
                     #print(rec.PartialResult())
