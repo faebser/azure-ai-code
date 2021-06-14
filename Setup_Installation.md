@@ -30,7 +30,14 @@ sudo apt-get install libasound2-dev
 conda install click==7.1.2
 conda install -c conda-forge spacy
 
-run ``python -m spacy download fr_core_news_sm`` 
+run ``python -m spacy download fr_core_news_sm``
+
+### Setup systemd
+
+copy lissa.service to ``/etc/systemd/system/lissa.service``
+change path on line 5 to point to correct python file
+activate conda
+run python from conda environment
 
 
 ### Install vosk STT
