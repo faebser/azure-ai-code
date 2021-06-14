@@ -1,0 +1,11 @@
+[Unit]
+Description=Lissa Project Service
+After=sound.target
+
+[Service]
+ExecStart=/usr/sbin/foo-daemon
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
