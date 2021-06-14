@@ -19,6 +19,9 @@ from collections import deque
 import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
 
+# import spacy for sentence segmentation
+import spacy
+nlp = spacy.load('fr_core_news_sm')
 
 # Build models
 current_dir = os.getcwd()
@@ -121,20 +124,25 @@ def generate_text(question, name, _context):
     return r[-1], _context
 
 def generate_audio(answer):
-    spectogram = synthesize(model_taco, "|" + answer)
-    return audio.inverse_spectrogram(spectogram, not hp.predict_linear)
-    #print('void')
+    sentences = [i for i in nlp(answer).sents]
+    spectograms = [ synthesize(model_taco, "|" + s) for s in sentences ]
+    return [ audio.inverse_spectrogram(_s, not hp.predict_linear) for _s in spectograms ]
 
-def play_audio(speech_audio, name):
-    _name = os.path.join('recordings', date_name()) +'.wav'
-    #_name = os.path.join('recordings', date_name()) +'.mp3'
-    audio.save(speech_audio, _name)
-    talk = AudioSegment.from_file(_name, format='wav')
+def play_audio(speech_audios, name):
+    _name = os.path.join('recordings', name)
+    files = []
+    for index, segment in enumerate(speech_audios):
+        audio.save(segment, _name + str(index) + '.wav')
+        files.append( _name + str(index) + '.wav')
+    #_name = os.path.join('recordings', name) +'.mp3'
+
+    for _n in files:
+        talk = AudioSegment.from_file(_n, format='wav')
+        play(talk)
     #tts = gTTS(answer, lang='fr')
     #tts = gTTS(answer, lang='fr', slow=True)
     #tts.save(_name)
     #talk = AudioSegment.from_file(_name, format='mp3')
-    play(talk)
 
 def save(question, answer, name):
     with open(os.path.join('recordings', name) + '.txt') as output_file:
@@ -176,8 +184,8 @@ try:
                         print("new context:")
                         print(context)
                         # TODO add systemd service
-                        _audio = generate_audio(answer)
-                        play_audio(_audio, name)
+                        _audios = generate_audio(answer)
+                        play_audio(_audios, name)
                         save(r['text'], answer, name)
                         with q.mutex: q = queue.Queue()
                     else:
