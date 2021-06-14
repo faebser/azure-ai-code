@@ -124,7 +124,7 @@ def generate_text(question, name, _context):
     return r[-1], _context
 
 def generate_audio(answer):
-    sentences = [i for i in nlp(answer).sents]
+    sentences = [str(i) for i in nlp(answer).sents]
     spectograms = [ synthesize(model_taco, "|" + s) for s in sentences ]
     return [ audio.inverse_spectrogram(_s, not hp.predict_linear) for _s in spectograms ]
 
