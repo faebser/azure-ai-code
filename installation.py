@@ -81,7 +81,6 @@ def int_or_str(text):
         return text
 
 def generate_text(question, name, _context):
-    # TODO add hidden prompt
     prompt = "{}A: {}\n B: ".format(tokenizer.bos_token, question)
     index = 0
 
@@ -124,7 +123,7 @@ def generate_text(question, name, _context):
     return r[-1], _context
 
 def generate_audio(answer):
-    sentences = [str(i).strip() for i in nlp(answer).sents]
+    sentences = [ answer ]
     print(sentences)
     spectograms = [ synthesize(model_taco, "|" + s + ACCENT) for s in sentences if len(s) > 0 ]
     return [ audio.inverse_spectrogram(_s, not hp.predict_linear) for _s in spectograms ]
