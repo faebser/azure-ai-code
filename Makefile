@@ -12,3 +12,6 @@ save:
 
 v2:
 	cd checkpoints/ && scp -r datascience@13.74.133.178:/home/datascience/notebooks/azure-ai-code/results3-finetune/checkpoint-2000 v2/
+
+v3:
+	cd checkpoints/ && scp -r datascience@13.74.133.178:/home/datascience/notebooks/azure-ai-code/results-combined v3/
