@@ -3,7 +3,7 @@ Description=Lissa Project Service
 After=sound.target
 
 [Service]
-ExecStart=/usr/sbin/foo-daemon
+ExecStart=/full/path/to/run.sh
 Restart=always
 RestartSec=5
 

@@ -35,9 +35,10 @@ run ``python -m spacy download fr_core_news_sm``
 ### Setup systemd
 
 copy lissa.service to ``/etc/systemd/system/lissa.service``
-change path on line 5 to point to correct python file
-activate conda
-run python from conda environment
+change path on line 5 to point to run.sh
+```chmod +x run.sh```
+systemctl daemon-reload
+sudo systemctl enable lissa.service
 
 
 ### Install vosk STT
