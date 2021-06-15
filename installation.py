@@ -118,7 +118,7 @@ def generate_text(question, name, _context):
 
     # sort by length and return only the longest
     r = sorted(to_return, key=len)
-    _context.appendleft("A: {}\n B: {} ".format(question, r[-1]))
+    _context.appendleft(" {} {}".format(question, r[-1]))
 
     return r[-1], _context
 
