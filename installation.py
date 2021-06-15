@@ -123,7 +123,7 @@ def generate_text(question, name, _context):
     return r[-1], _context
 
 def generate_audio(answer):
-    sentences = [str(i).strip() for i in nlp(answer).sents if len(i) < 0]
+    sentences = [str(i).strip() for i in nlp(answer).sents if len(i) > 0]
     print(sentences)
     spectograms = [ synthesize(model_taco, "|" + s + ACCENT) for s in sentences ]
     return [ audio.inverse_spectrogram(_s, not hp.predict_linear) for _s in spectograms ]
