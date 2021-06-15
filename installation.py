@@ -87,7 +87,7 @@ def generate_text(question, name, _context):
 
     original_prompt = prompt
 
-    while len(prompt) < 768 and len(_context) -1 > index:
+    while len(prompt) < 500 and len(_context) -1 > index:
         prompt = _context[ index ] + ' ' + prompt
         index = index + 1
 
@@ -118,6 +118,7 @@ def generate_text(question, name, _context):
 
     # sort by length and return only the longest
     r = sorted(to_return, key=len)
+
     _context.appendleft(" {} {}".format(question, r[-1]))
 
     return r[-1], _context
