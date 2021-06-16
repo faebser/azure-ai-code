@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-#
-
 import argparse
 import os
 import queue
@@ -15,6 +13,7 @@ import datetime
 import json
 import traceback
 from collections import deque
+import editdistance
 
 import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
@@ -75,6 +74,10 @@ def int_or_str(text):
         return int(text)
     except ValueError:
         return text
+
+def check_for_prerecored_answer(_question):
+    _q = _question.lower()
+    return ( editdistance.eval(_q, QUESTION) <= 2 )
 
 def clean_text(_text):
     _text = _text.replace("\n", " ")
@@ -158,6 +161,7 @@ DEVICE_ID =  17
 BLOCK_SIZE = 80000
 SAMPLE_RATE = None # set to None for auto samplerate
 ACCENT = "|00-de|fr"
+QUESTION = "Qui est tu".lower()
 
 if SAMPLE_RATE is None:
     device_info = sd.query_devices(DEVICE_ID, 'input')
@@ -180,10 +184,15 @@ try:
                     print("result with len {}: {}".format(len(r['text']), r['text']))
                     if len(r['text']) > 3:
                         name = date_name()
-                        answer, context = generate_text(r['text'], name, context)
-                        print("new context:")
-                        print(context)
-                        answer = clean_text(answer)
+                        if check_for_prerecored_answer(r['text']):
+                            # we found a prerecorded questions
+                            answer = "Je suis Lissa."
+                        else:
+                            # no prerecored answer
+                            answer, context = generate_text(r['text'], name, context)
+                            print("new context:")
+                            print(context)
+                            answer = clean_text(answer)
                         _audios = generate_audio(answer)
                         play_audio(_audios, name)
                         save(r['text'], answer, name)
