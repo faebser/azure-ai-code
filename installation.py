@@ -76,6 +76,10 @@ def int_or_str(text):
     except ValueError:
         return text
 
+def clean_text(_text):
+    _text = _text.replace("\n", " ")
+    return _text.strip()
+
 def generate_text(question, name, _context):
     prompt = "{}A: {}\n B: ".format(tokenizer.bos_token, question)
     index = 0
@@ -179,7 +183,7 @@ try:
                         answer, context = generate_text(r['text'], name, context)
                         print("new context:")
                         print(context)
-                        # TODO add systemd service
+                        answer = clean_text(answer)
                         _audios = generate_audio(answer)
                         play_audio(_audios, name)
                         save(r['text'], answer, name)
