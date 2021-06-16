@@ -19,10 +19,6 @@ from collections import deque
 import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
 
-# import spacy for sentence segmentation
-import spacy
-nlp = spacy.load('fr_core_news_sm')
-
 # Build models
 current_dir = os.getcwd()
 
