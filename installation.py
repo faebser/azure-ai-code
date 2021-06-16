@@ -114,14 +114,14 @@ def generate_text(question, name, _context):
         decoded_output.append(tokenizer.decode(sample, skip_special_tokens=True))
     #print(decoded_output)
     for o in decoded_output:
-        b = o.split( 'B:' )[1]
+        b = o.split( 'B:' )[-1]
         to_return.append(b)
         #to_return.append(b + " ")
 
     # sort by length and return only the longest
     r = sorted(to_return, key=len)
 
-    _context.appendleft(" {} {}".format(question, r[-1]))
+    _context.appendleft("A: {} B: {}\n".format(question, r[-1]))
 
     return r[-1], _context
 
