@@ -14,6 +14,7 @@ import json
 import traceback
 from collections import deque
 import editdistance
+from time import sleep
 
 import torch
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
@@ -80,8 +81,7 @@ def check_for_prerecored_answer(_question):
     return ( editdistance.eval(_q, QUESTION) <= 2 )
 
 def clean_text(_text):
-    _text = _text.replace("\n", " ")
-    return _text.strip()
+    return _text.replace("\n", " ").strip()
 
 def generate_text(question, name, _context):
     prompt = "{}A: {}\n B: ".format(tokenizer.bos_token, question)
@@ -96,34 +96,44 @@ def generate_text(question, name, _context):
     inputs = tokenizer.encode(prompt, add_special_tokens=False, return_tensors="pt").to(device)
 
     to_return = []
+    real_r = ''
+    tries = 1
 
-    output = gpt2_model.generate(
-                inputs,
-                do_sample=True,
-                top_k=50,
-                max_length=len(prompt) + 100,
-                top_p=0.65,
-                num_return_sequences=2,
-                pad_token_id=tokenizer.eos_token_id,
-                temperature=0.65
-    )
+    # it will try MAX_TRIES times
+    while len(real_r) < 1 and tries <= MAX_TRIES:
+
+        output = gpt2_model.generate(
+            inputs,
+            do_sample=True,
+            top_k=50,
+            max_length=len(prompt) + 100,
+            top_p=0.65,
+            num_return_sequences=2,
+            pad_token_id=tokenizer.eos_token_id,
+            temperature=0.65
+        )
 
     # Decode it
-    decoded_output = []
-    for sample in output:
-        decoded_output.append(tokenizer.decode(sample, skip_special_tokens=True))
-    #print(decoded_output)
-    for o in decoded_output:
-        b = o.split( 'B:' )[-1]
-        to_return.append(b)
-        #to_return.append(b + " ")
+        decoded_output = []
+        for sample in output:
+            decoded_output.append(tokenizer.decode(sample, skip_special_tokens=True))
+        #print(decoded_output)
+        for o in decoded_output:
+            b = o.split( 'B:' )[-1]
+            to_return.append(b)
 
-    # sort by length and return only the longest
-    r = sorted(to_return, key=len)
+            # sort by length and return only the longest
+            r = sorted(to_return, key=len)
 
-    _context.appendleft("A: {} B: {}\n".format(question, r[-1]))
+        real_r = clean_text(r[-1])
 
-    return r[-1], _context
+    # check if it returned an empty string and max tries
+    if len(real_r) == 0 and tries == MAX_TRIES:
+        real_r = "Pardon, je ne sait pas"
+    else:
+        _context.appendleft("A: {} B: {}\n".format(question, real_r))
+
+    return real_r, _context
 
 def generate_audio(answer):
     sentences = [ answer ]
@@ -162,6 +172,7 @@ BLOCK_SIZE = 80000
 SAMPLE_RATE = None # set to None for auto samplerate
 ACCENT = "|00-de|fr"
 QUESTION = "Qui est tu".lower()
+MAX_TRIES = 2
 
 if SAMPLE_RATE is None:
     device_info = sd.query_devices(DEVICE_ID, 'input')
@@ -187,6 +198,7 @@ try:
                         if check_for_prerecored_answer(r['text']):
                             # we found a prerecorded questions
                             answer = "Je suis Lissa."
+                            sleep(5)
                         else:
                             # no prerecored answer
                             answer, context = generate_text(r['text'], name, context)
