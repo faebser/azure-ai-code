@@ -78,7 +78,13 @@ def int_or_str(text):
 
 def check_for_prerecored_answer(_question):
     _q = _question.lower()
-    return ( editdistance.eval(_q, QUESTION) <= 2 )
+    return ( editdistance.eval(_q, QUESTION) <= 2 or editdistance.eval(_q, QUESTION2) )
+
+def get_prerecorded_answer(_question):
+    _q = _question.lower()
+    qq = [ (QUESTION, 'Je suis Lissa'), (QUESTION2, 'partout, prend un mirroir.') ]
+    for _qq, _a in qq:
+        if editdistance.eval(_q, _qq): return _a
 
 def clean_text(_text):
     return _text.replace("\n", " ").strip()
@@ -172,6 +178,7 @@ BLOCK_SIZE = 80000
 SAMPLE_RATE = None # set to None for auto samplerate
 ACCENT = "|00-de|fr"
 QUESTION = "Qui est tu".lower()
+QUESTION2 = "ou es tu".lower()
 MAX_TRIES = 2
 
 if SAMPLE_RATE is None:
@@ -197,7 +204,7 @@ try:
                         name = date_name()
                         if check_for_prerecored_answer(r['text']):
                             # we found a prerecorded questions
-                            answer = "Je suis Lissa."
+                            answer = get_prerecorded_answer(r['text'])
                             sleep(5)
                         else:
                             # no prerecored answer
