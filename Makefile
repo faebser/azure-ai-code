@@ -18,3 +18,9 @@ v3:
 
 v4:
 	cd checkpoints/ && scp -r datascience@52.164.248.92:/home/datascience/notebooks/azure-ai-code/results_v4/checkpoint-3250 v4/
+
+v4-short:
+	cd checkpoints/ && scp -r datascience@52.164.248.92:/home/datascience/notebooks/azure-ai-code/results_v4/checkpoint-1000 v4-short/
+
+v4-medium:
+	cd checkpoints/ && scp -r datascience@52.164.248.92:/home/datascience/notebooks/azure-ai-code/results_v4/checkpoint-2000 v4-medium/
