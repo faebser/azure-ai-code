@@ -15,3 +15,6 @@ v2:
 
 v3:
 	cd checkpoints/ && scp -r datascience@13.74.133.178:/home/datascience/notebooks/azure-ai-code/results-combined v3/
+
+v4:
+	cd checkpoints/ && scp -r datascience@52.164.248.92:/home/datascience/notebooks/azure-ai-code/results_v4/checkpoint-3250 v4/
