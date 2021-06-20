@@ -172,7 +172,7 @@ def save(question, answer, name):
 # CONFIG
 ##
 
-DEVICE_ID =  None # leave as None for default device
+DEVICE_ID =  "default"
 # get device from vosk example: python test_microphone.py -l
 BLOCK_SIZE = 80000
 SAMPLE_RATE = None # set to None for auto samplerate
@@ -180,11 +180,6 @@ ACCENT = "|00-de|fr"
 QUESTION = "Qui est tu".lower()
 QUESTION2 = "ou es tu".lower()
 MAX_TRIES = 2
-
-# look for default device
-if DEVICE_ID is None:
-    devices = sd.query_devices()
-    DEVICE_ID = len(devices) - 1 # default is always the last one
 
 if SAMPLE_RATE is None:
     device_info = sd.query_devices(DEVICE_ID, 'input')
