@@ -3,7 +3,9 @@ Description=Lissa Project Service
 After=sound.target
 
 [Service]
-ExecStart=/full/path/to/run.sh
+User=panorama
+Group=panorama
+ExecStart=/usr/bin/bash /home/panorama/azure-ai-code/run.sh
 Restart=always
 RestartSec=5
 ExecStartPre=/bin/sleep 30
