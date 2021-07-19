@@ -23,7 +23,7 @@ from transformers import GPT2TokenizerFast, GPT2LMHeadModel
 current_dir = os.getcwd()
 
 vosk_model = vosk.Model(os.path.join(current_dir, "checkpoints", "vosk-model"))
-gpt2_model = GPT2LMHeadModel.from_pretrained("checkpoints/checkpoint-2500/")
+gpt2_model = GPT2LMHeadModel.from_pretrained("checkpoints/v4/")
 tokenizer = GPT2TokenizerFast.from_pretrained("antoiloui/belgpt2", model_max_length=768, pad_token='<|pad|>')
 
 # put gpt2 on gpu
@@ -112,7 +112,7 @@ def generate_text(question, name, _context):
             inputs,
             do_sample=True,
             top_k=50,
-            max_length=len(prompt) + 100,
+            max_length=len(prompt) + 5,
             top_p=0.65,
             num_return_sequences=2,
             pad_token_id=tokenizer.eos_token_id,
@@ -157,7 +157,17 @@ def play_audio(speech_audios, name):
 
     for _n in files:
         talk = AudioSegment.from_file(_n, format='wav')
-        play(talk)
+        #play(talk)
+        pitch = 0.98
+        new_sample_rate = int(talk.frame_rate * pitch)
+        # keep the same samples but tell the computer they ought to be played at the 
+        # new, higher sample rate. This file sounds like a chipmunk but has a weird sample rate.
+        pitch_talk = talk._spawn(talk.raw_data, overrides={'frame_rate': new_sample_rate})
+        # now we just convert it to a common sample rate (44.1k - standard audio CD) to 
+        # make sure it works in regular audio players. Other than potentially losing audio quality (if
+        # you set it too low - 44.1k is plenty) this should now noticeable change how the audio sounds.
+        pitch_talk_ready_to_export = pitch_talk.set_frame_rate(44100)
+        play(pitch_talk_ready_to_export)
     #tts = gTTS(answer, lang='fr')
     #tts = gTTS(answer, lang='fr', slow=True)
     #tts.save(_name)
@@ -174,7 +184,7 @@ def save(question, answer, name):
 
 DEVICE_ID =  "default"
 # get device from vosk example: python test_microphone.py -l
-BLOCK_SIZE = 80000
+BLOCK_SIZE = 40000
 SAMPLE_RATE = None # set to None for auto samplerate
 ACCENT = "|00-de|fr"
 QUESTION = "Qui est tu".lower()
@@ -187,7 +197,7 @@ if SAMPLE_RATE is None:
     SAMPLE_RATE = int(device_info['default_samplerate'])
 
 q = queue.Queue()
-context = deque(maxlen=10)
+context = deque(maxlen=3)
 
 try:
     with sd.RawInputStream(samplerate=SAMPLE_RATE, blocksize = BLOCK_SIZE, device=DEVICE_ID,
