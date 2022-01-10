@@ -1,0 +1,3 @@
+bonjour
+
+(Retourne à son écran.)
